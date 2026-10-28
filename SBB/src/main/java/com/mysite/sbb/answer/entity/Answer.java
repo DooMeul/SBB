@@ -4,28 +4,27 @@ import com.mysite.sbb.question.entity.Question;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+//@Table(name = "ABCD")
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Answer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    @Column(columnDefinition =  "TEXT")
+    @Column(length = 100, nullable = true)
     private String content;
 
     private LocalDateTime created;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id", nullable = false)
+    //@JoinColumn(name = "question_id", nullable = false)
     private Question question;
 }

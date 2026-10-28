@@ -2,10 +2,118 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
-
+<th:block layout:fragment="css">
+    <style>
+        .fieldError{
+            color: #b02a37;
+        }
+    </style>
+</th:block>
 
 <div layout:fragment="content" class="container my-3">
-    <h2>상세 페이지</h2>
+    <!-- 질문 제목 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">질문</h4>
+        </div>
+        <div class="card-body">
+            <h2 class="card-title fw-bold"
+                th:text="${question.subject}">
+                제목
+            </h2>
+        </div>
+    </div>
 
+    <!-- 질문 내용 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">질문 내용</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text"
+               style="white-space: pre-wrap;"
+               th:text="${question.content}">
+                내용
+            </p>
+        </div>
+    </div>
+
+    <!-- 답변 목록 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                답변 목록
+                <span class="badge bg-primary"
+                      th:text="${#lists.size(question.answerList)}">0</span>
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <!-- 답변이 없는 경우 -->
+            <div th:if="${#lists.isEmpty(question.answerList)}"
+                 class="text-center text-muted py-4">
+                아직 등록된 답변이 없습니다.
+            </div>
+
+            <!-- 답변마다 개별 Card 생성 -->
+            <div th:each="answer, stat : ${question.answerList}"
+                 class="card mb-3 shadow-sm">
+
+                <div class="card-header bg-white d-flex align-items-center">
+                <span class="badge bg-secondary me-2"
+                      th:text="|답변 ${stat.count}|">
+                    답변 1
+                </span>
+                    <span class="text-muted small">답변 내용</span>
+                </div>
+
+                <div class="card-body">
+                    <p class="card-text mb-0"
+                       style="white-space: pre-wrap;"
+                       th:text="${answer.content}">
+                        답변 내용
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 답변 작성 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">답변 작성</h5>
+        </div>
+
+        <div class="card-body">
+            <form th:action="@{|/answer/create/${question.id}|}"
+                  th:object="${answerDto}"
+                  method="post">
+
+                <div class="mb-3">
+                    <label for="content" class="form-label fw-semibold">
+                        답변 내용
+                    </label>
+
+                    <textarea id="content"
+                              name="content"
+                              class="form-control"
+                              rows="8"
+                              placeholder="질문에 대한 답변을 입력하세요."
+                              th:field="*{content}"
+                              ></textarea>
+                    <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError">error</p>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        답변 등록
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-</html>
+</html>`

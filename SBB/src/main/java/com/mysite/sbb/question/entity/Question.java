@@ -10,15 +10,17 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@ToString(exclude = "answersList")
+//@Table(name = "ABCD")
+@ToString(exclude = "answerList")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Question {
 
-    @Id  // 기본키 설정
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 아이디
+    //@Column(name="question_id")
+    private long id; // 아이디
 
     @Column(length = 100, nullable = false)
     private String subject; // 질문 제목
@@ -27,7 +29,8 @@ public class Question {
     private String content; // 질문 내용
 
     private LocalDateTime created; // 생성일
+    //fetch = FetchType.LAZY는 디폴트임
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question",cascade = CascadeType.ALL)
+    private List<Answer> answerList;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Answer> answersList;
 }
