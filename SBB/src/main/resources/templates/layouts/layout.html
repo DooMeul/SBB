@@ -1,39 +1,62 @@
 <!DOCTYPE html>
+<!-- ==========================================================================
+     [파일 역할] layouts/layout.html = 모든 페이지가 공통으로 쓰는 "뼈대(레이아웃)"
+      - 구조 :  <head>(공통 CSS) → header → 각 페이지 본문(content) → footer → 공통 JS
+      - 각 페이지(index.html, list.html, detail.html ...)는 맨 위에
+        layout:decorate="~{layouts/layout}" 을 적어서 이 뼈대를 사용함
+      - 각 페이지의 layout:fragment="content" 부분이 아래 <main layout:fragment="content"> 자리에 끼워짐
+      - 필요 라이브러리 : build.gradle 의 thymeleaf-layout-dialect
+
+      [연결 파일]
+       - fragments/header.html  (상단 메뉴바)  ← th:replace 로 삽입
+       - fragments/footer.html  (하단 저작권) ← th:replace 로 삽입
+       - static/css/bootstrap.min.css, static/js/bootstrap.bundle.min.js (부트스트랩, 인터넷 없이 로컬 파일 사용)
+     ========================================================================== -->
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">  <!-- th: 와 layout: 문법을 쓰겠다는 선언 -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">                                                  <!-- 한글 인코딩 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 모바일 화면 대응 -->
+    <!-- devtools 라이브리로드 : html 수정 시 브라우저 자동 새로고침 (application.yml livereload port 35729 와 연결) -->
     <script src="http://localhost:35729/livereload.js?snipver=1"></script>
-    <title>병희의 SBB</title>
+    <title>병희의 SBB</title>                                              <!-- 브라우저 탭 제목 -->
 
 
     <!-- 공통 Bootstrap CSS (로컬 정적 리소스: src/main/resources/static/css/...) -->
+    <!-- @{/css/...} : static 폴더 기준 경로. static/css/bootstrap.min.css 를 불러옴 -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 
     <!-- 개별 페이지 전용 CSS 영역 -->
+    <!-- 각 페이지에서 <th:block layout:fragment="css"><style>...</style></th:block> 로 작성한 CSS 가 여기에 들어옴
+         (예: detail.html, inputForm.html 의 .fieldError 스타일) -->
     <th:block layout:fragment="css"></th:block>
 </head>
+<!-- d-flex flex-column min-vh-100 : 화면 높이를 꽉 채워서 footer 가 항상 맨 아래에 붙게 함 (부트스트랩 클래스) -->
 <body class="d-flex flex-column min-vh-100">
 
 <!-- Header 영역 (필요 시 주석 해제하여 fragment 경로 지정) -->
 <!--<header th:replace="~{fragments/header :: header}"></header>-->
+<!-- ~{파일경로::fragment이름} → templates/fragments/header.html 의 th:fragment="header" 부분으로 통째로 교체 -->
 <header th:replace="~{fragments/header::header}"></header>
 
 <!-- 개별 페이지 본문 영역 -->
+<!-- flex-grow-1 : 본문이 남는 공간을 다 차지 → footer 를 아래로 밀어냄 -->
 <main class="flex-grow-1" layout:fragment="content">
     <!-- 각 화면 뷰 템플릿의 본문이 이 자리에 삽입됩니다. -->
 </main>
 
 <!-- Footer 영역 (필요 시 주석 해제하여 fragment 경로 지정) -->
 <!--<footer th:replace="~{fragments/footer :: footer}"></footer>-->
+<!-- templates/fragments/footer.html 의 th:fragment="footer" 부분으로 교체 -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 <!-- 공통 Bootstrap JS 번들 (로컬 정적 리소스: src/main/resources/static/js/...) -->
+<!-- 드롭다운 메뉴, 모바일 햄버거 버튼 등 부트스트랩 동작에 필요 -->
 <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 <!-- 개별 페이지 전용 Script 영역 -->
+<!-- 각 페이지의 <script layout:fragment="script"> 가 여기에 들어옴 (예: list.html 의 페이징 클릭 스크립트) -->
 <th:block layout:fragment="script"></th:block>
 </body>
 </html>

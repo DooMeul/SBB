@@ -1,49 +1,62 @@
+// ============================================================================
+// [파일 역할] build.gradle = 프로젝트 빌드 설정 + 사용할 라이브러리(의존성) 목록
+//  - 여기 적힌 라이브러리를 Gradle 이 다운로드해서 프로젝트에 추가해 줌
+//  - 수정 후에는 IntelliJ 오른쪽 위 코끼리(Gradle) 새로고침 버튼 눌러야 반영됨
+//  ※ 시험장에서 인터넷이 안 되면 새 라이브러리 다운로드가 안 되므로, 이 파일은 되도록 그대로 사용할 것
+// ============================================================================
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.1.1'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'                                                   // 자바 프로젝트
+    id 'org.springframework.boot' version '4.1.1'               // 스프링 부트 버전
+    id 'io.spring.dependency-management' version '1.1.7'        // 라이브러리 버전을 스프링 부트에 맞게 자동 관리
 }
 
-group = 'com.mysite'
+group = 'com.mysite'               // 기본 패키지 그룹명 (패키지 com.mysite.sbb 와 연결)
 version = '0.0.1-SNAPSHOT'
 description = 'SBB'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(21)            // 자바 21 버전 사용
     }
 }
 
 repositories {
-    mavenCentral()
+    mavenCentral()                 // 라이브러리를 받아오는 저장소
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+    // ---- 화면(템플릿) ----
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'   // Thymeleaf : th:text, th:each 등 html 템플릿 엔진
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'         // layout:decorate, layout:fragment (공통 레이아웃 기능)
 
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // ---- 입력값 검증 ----
+    implementation 'org.springframework.boot:spring-boot-starter-validation'  // @Valid, @NotEmpty, @Size
 
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'com.mysql:mysql-connector-j:8.4.0'
-    compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.projectlombok:lombok'
+    // ---- 웹 + DB ----
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'      // 웹(@Controller, @GetMapping, 내장 톰캣)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'    // JPA (@Entity, JpaRepository)
+    implementation 'com.mysql:mysql-connector-j:8.4.0'                        // MySQL 접속 드라이버
+    compileOnly 'org.projectlombok:lombok'                                    // Lombok (@Getter, @Builder, @RequiredArgsConstructor ...)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'           // 자동 재시작/라이브리로드 (application.yml devtools 설정)
+    annotationProcessor 'org.projectlombok:lombok'                            // Lombok 어노테이션을 컴파일 시 실제 코드로 바꿔 줌
+
+    // ---- 테스트용 ----
     testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testCompileOnly 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
+    // ---- DI 연습 3단계에서 @Named 사용하려고 추가 ----
     // Source: https://mvnrepository.com/artifact/jakarta.inject/jakarta.inject-api
     implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
 }
 
 tasks.named('test') {
-    useJUnitPlatform()
+    useJUnitPlatform()             // JUnit5 로 테스트 실행
 }
 
+// ---- 한글 깨짐 방지 : 컴파일/실행 시 UTF-8 사용 ----
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }

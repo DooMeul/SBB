@@ -1,7 +1,13 @@
 <!DOCTYPE html>
+<!-- ==========================================================================
+     [파일 역할] fragments/footer.html = 모든 페이지 하단에 나오는 "푸터(저작권 문구)"
+      - layouts/layout.html 에서 th:replace="~{fragments/footer :: footer}" 로 불러감
+      - th:fragment="footer" 가 붙은 div 부분만 사용됨
+     ========================================================================== -->
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<div class="footer" th:fragment="footer">
+<div class="footer" th:fragment="footer">  <!-- 이 이름("footer")으로 불러감 -->
     <footer class="page-footer font-small cyan darken-3">
+        <!-- text-center : 가운데 정렬, py-3 : 위아래 여백 (부트스트랩 클래스) -->
         <div class="footer-copyright text-center py-3">
             2026 Java Spring Boot Project
         </div>

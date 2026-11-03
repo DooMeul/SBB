@@ -1,21 +1,33 @@
 <!DOCTYPE html>
+<!-- ==========================================================================
+     [파일 역할] question/inputForm.html = 질문(게시글) "등록 폼" 화면 (글쓰기 화면)
+      - 화면 열기 : GET  /question/create → QuestionController.createInputForm(QuestionDto questionDto)
+      - 저장 요청 : POST /question/create → QuestionController.createQuestion(@Valid QuestionDto, BindingResult)
+                    → 성공 시 /question/list 로 이동, 실패(빈 값 등) 시 이 화면을 다시 보여주며 에러 메시지 표시
+      - 사용 객체 : ${questionDto}  (question/dto/QuestionDto.java)
+      ※ th:object + th:field + th:errors 세트가 "입력값 검증 + 에러메시지 표시"의 핵심. 다른 폼 만들 때 그대로 복붙.
+     ========================================================================== -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 
+<!-- [이 페이지 전용 CSS] → layout.html 의 <head> 안 layout:fragment="css" 자리에 들어감 -->
 <th:block layout:fragment="css">
     <style>
-        .fieldError{
+        .fieldError{            /* 검증 에러 메시지를 빨간 글씨로 */
             color: #b02a37;
         }
     </style>
 </th:block>
 
+<!-- my-5 : 위아래 여백 크게 -->
 <div layout:fragment="content" class="container my-5">
 
+    <!-- row + justify-content-center + col-md-8 : 폼을 화면 가운데에 적당한 폭으로 배치 (부트스트랩 그리드) -->
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
 
+            <!-- 카드 모양 박스 (card-header = 파란 제목줄, card-body = 내용) -->
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">질문 등록</h4>
@@ -23,13 +35,19 @@
 
                 <div class="card-body p-4">
 
+                    <!-- ================= 등록 폼 시작 =================
+                         th:action="@{/question/create}" method="post" : 저장 버튼 누르면 POST /question/create 로 전송
+                         th:object="${questionDto}" : 이 폼이 사용할 객체 지정 → 안에서 *{필드명} 으로 짧게 사용 가능 -->
                     <form th:action="@{/question/create}" th:object="${questionDto}" method="post">
 
                         <!-- 제목 -->
                         <div class="mb-4">
+                            <!-- label 의 for 와 input 의 id 가 같으면 라벨 클릭 시 입력칸에 커서가 감 -->
                             <label for="subject" class="form-label fw-bold">
                                 제목
                             </label>
+                            <!-- th:field="*{subject}" : id, name, value 를 questionDto.subject 로 자동 세팅
+                                 → 검증 실패로 다시 돌아왔을 때 입력했던 값이 그대로 남아 있음 -->
                             <input type="text"
                                    id="subject"
                                    name="subject"
@@ -37,6 +55,7 @@
                                    class="form-control"
                                    placeholder="질문 제목을 입력하세요."
                                    required>
+                            <!-- subject 에 에러가 있을 때만(th:if) QuestionDto 의 message("제목은 필수 항목입니다." 등)를 출력 -->
                             <p th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}" class="fieldError">error</p>
                         </div>
 
@@ -45,6 +64,7 @@
                             <label for="content" class="form-label fw-bold">
                                 내용
                             </label>
+                            <!-- 여러 줄 입력칸 (rows="8" = 8줄 높이). th:field 로 questionDto.content 와 연결 -->
                             <textarea id="content"
                                       name="content"
                                       class="form-control"
@@ -52,17 +72,20 @@
                                       th:field="*{content}"
                                       placeholder="질문 내용을 입력하세요."
                                       required></textarea>
+                            <!-- content 검증 에러 메시지 -->
                             <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="fieldError">error</p>
                         </div>
 
                         <!-- 저장 버튼 -->
+                        <!-- justify-content-end : 버튼을 오른쪽 정렬 -->
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary">  <!-- type="submit" → 폼 전송 -->
                                 저장하기
                             </button>
                         </div>
 
                     </form>
+                    <!-- ================= 등록 폼 끝 ================= -->
 
                 </div>
             </div>

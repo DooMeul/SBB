@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ======================================================================
+     [파일 역할] logback-spring.xml = 콘솔 로그 출력 형식/레벨 설정 파일
+      - 파일 이름이 logback-spring.xml 이면 스프링 부트가 자동으로 읽음 (따로 연결 필요 없음)
+      - 컨트롤러/서비스의 log.info(...) 출력이 이 설정에 따라 콘솔에 찍힘
+      - scan="true" : 이 파일을 수정하면 30초마다 다시 읽어서 반영
+     ====================================================================== -->
 <configuration scan="true" scanPeriod="30 seconds">
+    <!-- 로그에 색깔(clr)과 예외 출력 형식(wex, wEx)을 쓰기 위한 변환 규칙 등록 -->
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
     <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
 
+    <!-- 콘솔 로그 한 줄의 모양 : [레벨] : 로거(클래스)이름 : 메시지 -->
     <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr([${LOG_LEVEL_PATTERN:-%5p}]) : %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}" />
     <property name="CONSOLE_LOG_CHARSET" value="${CONSOLE_LOG_CHARSET:-default}" />
+    <!-- CONSOLE 이라는 이름의 출력기(appender) : 위 패턴으로 콘솔에 출력 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
@@ -13,6 +22,7 @@
         </encoder>
     </appender>
 
+    <!-- 스프링 부트 기본 파일 로그 설정 포함 -->
     <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
 
     <!-- SQL 보여주기 -->
@@ -20,9 +30,11 @@
 
     <!-- 조회 결과를 테이블로 보여주기 -->
     <logger name="jdbc.resultsettable" level="INFO" appender-ref="console-infolog" />
+    <!-- 스프링 내부 로그는 에러만 출력 (콘솔이 너무 지저분해지는 것 방지) -->
     <logger name="org.springframework" level="error" />
     <logger name="org.springframework.jdbc" level="error" />
 
+    <!-- 그 외 전체 로그 : INFO 레벨 이상을 CONSOLE 로 출력 (log.info 가 보이는 이유) -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
     </root>

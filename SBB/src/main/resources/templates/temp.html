@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+<!-- ==========================================================================
+     [파일 역할] temp.html = 새 페이지 만들 때 복사해서 쓰는 "빈 템플릿(틀)"
+      - 연결 URL : GET "/temp" → common/controller/IndexController.temp() 가 return "temp";
+      ★ 새 페이지 만드는 순서
+        1) 이 파일 복사 → templates/폴더/새이름.html 로 저장
+        2) Controller 에 @GetMapping("/주소") 메서드 만들고 return "폴더/새이름";
+        3) content 안에 내용 작성 (header/footer 는 레이아웃이 자동으로 붙여줌)
+     ========================================================================== -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">

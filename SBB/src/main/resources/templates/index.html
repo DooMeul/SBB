@@ -1,11 +1,18 @@
 <!DOCTYPE html>
+<!-- ==========================================================================
+     [파일 역할] index.html = 메인(홈) 페이지
+      - 연결 URL : GET "/" → common/controller/IndexController.index2() 가 return "index";
+      - layout:decorate="~{layouts/layout}" : layouts/layout.html 뼈대(header/footer 포함)를 씌움
+      - 아래 layout:fragment="content" 안의 내용만 layout.html 의 본문 자리에 들어감
+     ========================================================================== -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
 
 
+<!-- container : 가운데 정렬된 본문 폭, my-3 : 위아래 여백 -->
 <div layout:fragment="content" class="container my-3">
-    <h1>스프링 A반 사이트</h1>
+    <h1>스프링 A반 사이트</h1>   <!-- 메인 화면 제목 (여기에 원하는 내용 추가) -->
 
 </div>
 </html>

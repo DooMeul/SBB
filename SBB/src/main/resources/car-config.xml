@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- ======================================================================
+     [파일 역할] car-config.xml = DI 연습 3단계(annotation)용 "XML 방식" 스프링 설정 파일
+      - 웹사이트(게시판)와는 관계없음
+      - 사용처 : common/annotation/main/AnnotationMain.java
+                 new ClassPathXmlApplicationContext("car-config.xml") 로 이 파일을 읽음
+     ====================================================================== -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -6,5 +12,7 @@
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+    <!-- 이 패키지 안에서 @Component, @Service 붙은 클래스를 찾아 자동으로 Bean 생성
+         (HyundaiMaker → "Hyundai", KiaMaker → "Kia", OrderManager → "orderManager") -->
     <context:component-scan base-package="com.mysite.sbb.common.annotation.code"/>
 </beans>

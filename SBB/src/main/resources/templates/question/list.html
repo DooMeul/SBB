@@ -1,13 +1,27 @@
 <!DOCTYPE html>
+<!-- ==========================================================================
+     [파일 역할] question/list.html = 질문(게시글) "목록" 화면 + 페이징 + 질문등록 버튼
+      - 연결 URL     : GET /question/list?page=번호 → QuestionController.list()
+      - 받는 데이터  : ${paging}  (Page<Question> 객체. 컨트롤러에서 model.addAttribute("paging", paging))
+                       paging 안에 현재 페이지의 질문 10개 + 전체 개수/페이지 수 정보가 들어 있음
+      - 이동하는 곳  : 제목 클릭 → /question/{id} (detail.html)
+                       질문 등록 버튼 → /question/create (inputForm.html)
+                       페이지 번호 클릭 → 아래 script 가 searchForm 을 /question/list?page=N 으로 전송
+
+      [구성]  ① 목록 테이블  ② 페이징 버튼  ③ 페이지 이동용 숨김 폼 + 질문등록 버튼  ④ 페이징 클릭 스크립트
+     ========================================================================== -->
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout}">
+      layout:decorate="~{layouts/layout}">  <!-- 공통 레이아웃(header/footer) 적용 -->
 
 
-<div layout:fragment="content" class="container my-3">
+<div layout:fragment="content" class="container my-3">  <!-- layout.html 의 본문 자리에 들어갈 부분 -->
     <h1>질문 목록</h1>
+
+    <!-- ================= ① 목록 테이블 시작 ================= -->
+    <!-- table-striped : 줄마다 배경색 번갈아 표시 (부트스트랩) -->
     <table class="table table-striped">
-        <thead class="table-dark">
+        <thead class="table-dark">   <!-- 머리글 행 : 검은 배경 -->
         <tr>
             <th>번호</th>
             <th>제목</th>
@@ -15,21 +29,30 @@
         </tr>
         </thead>
         <tbody>
+        <!-- th:each : paging 안의 질문들을 하나씩 꺼내 question 변수에 담고 <tr> 을 반복 생성
+             loop : 반복 상태 변수 (loop.index = 0부터, loop.count = 1부터) -->
         <tr th:each="question, loop : ${paging}">
             <!--<td th:text="${loop.count}"></td>--> <!-- 1, 2, 3, ... -->
+            <!-- 글 번호 계산 (최신글이 큰 번호) = 전체 글 수 - (현재페이지 * 페이지당 개수) - 반복 인덱스
+                 예) 전체 300개, 0페이지 첫 줄 → 300 - 0 - 0 = 300 -->
             <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
             <td>
+                <!-- 제목 링크 : |...| 는 문자열 + 변수 합치기 문법 → /question/1, /question/2 ... (QuestionController.detail) -->
                 <a th:href="@{|/question/${question.id}|}" th:text="${question.subject}"></a>
+                <!-- 답변 개수 배지 : 답변이 1개 이상일 때만(th:if) 제목 옆에 파란 숫자로 표시 -->
                 <span class="badge bg-primary text-white ms-1"
                       th:if="${#lists.size(question.answerList) >0}"
                       th:text="${#lists.size(question.answerList)}">
             </span>
             </td>
+            <!-- 작성일 : #temporals.format 으로 LocalDateTime 을 "2026-11-03 14:30" 형태로 출력 -->
             <td th:text="${#temporals.format(question.created, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         </tbody>
     </table>
+    <!-- ================= ① 목록 테이블 끝 ================= -->
 
+    <!-- ================= ② 페이징 시작 (게시판 페이징이 필요하면 이 블록 통째로 복붙) ================= -->
     <!-- 페이징 기능 추가 -->
     <!-- 코드는 먼저 paging 객체가 비어 있지 않은지 확인합니다. 이를 통해 페이징 데이터가 없는 경우 페이징 UI를 렌더링하지 않도록 합니다. -->
     <div th:if="${!paging.isEmpty()}">
@@ -37,10 +60,14 @@
         <!-- startPage와 endPage는 현재 페이지 번호(paging.number)를 기준으로 계산됩니다.
         startPage는 현재 페이지 번호를 10으로 나눈 뒤 10을 곱해 계산되며,
         endPage는 총 페이지 수(paging.totalPages)와 비교하여 적절한 값을 설정합니다.-->
+        <!-- th:with : 이 블록 안에서만 쓸 변수(startPage, endPage)를 만듦
+             예) 현재 13페이지(number=12) → startPage=10, endPage=19 (단, 마지막 페이지를 넘지 않음) -->
         <th:block th:with="startPage=${(paging.number/10) * 10},
         endPage=(${(paging.totalPages == 0) ? 1 : (startPage + 9 < paging.totalPages ? startPage + 9 : paging.totalPages - 1)})">
 
             <!-- pagination, page-item, page-link 클래스 확인!-->
+            <!-- pagination : 부트스트랩 페이지 버튼 모양 / justify-content-center : 가운데 정렬 -->
+            <!-- 각 버튼의 th:data-page="번호" → HTML 에는 data-page="번호" 로 출력되고, 아래 script 가 이 값을 읽어 이동 -->
             <ul class="pagination justify-content-center">
                 <!-- 처음 버튼: 첫 번째 페이지로 이동하는 버튼입니다. 현재 페이지가 첫 페이지(paging.number == 0)인 경우
                 disabled 클래스를 추가하여 비활성화합니다.-->
@@ -57,6 +84,7 @@
                     </a>
                 </li>
                 <!-- 페이지 번호 버튼: startPage부터 endPage까지의 페이지 번호를 반복 렌더링합니다. 현재 페이지는 active 클래스를 추가하여 강조합니다. -->
+                <!-- #numbers.sequence(a, b) : a부터 b까지 숫자 목록 생성. 화면에는 page+1 (1부터) 로 표시 -->
                 <li th:each="page: ${#numbers.sequence(startPage, endPage)}"
                     th:classappend="${page == paging.number} ? 'active'" class="page-item">
                     <a th:text="${page + 1}" class="page-link" href="javascript:void(0)" th:data-page="${page}"></a>
@@ -78,13 +106,22 @@
         </th:block>
     </div>
     <!-- 페이징 기능 종료 -->
+    <!-- ================= ② 페이징 끝 ================= -->
 
+    <!-- ================= ③ 페이지 이동용 숨김 폼 + 질문 등록 버튼 ================= -->
     <!-- 폼 추가 -->
+    <!-- 화면에는 안 보이는 폼. 페이지 버튼을 누르면 script 가 hidden 의 page 값을 바꾸고 submit
+         → GET /question/list?page=N 으로 요청 (QuestionController.list 의 @RequestParam("page") 로 들어감)
+         ※ 나중에 검색 기능을 추가할 때 여기에 <input type="hidden" name="kw"> 같은 것을 더 넣어서 사용 -->
     <form th:action="@{/question/list}" method="get" id="searchForm">
         <input type="hidden" id="page" name="page" th:value="${paging.number}">
     </form>
+    <!-- 질문 등록 버튼 → GET /question/create → QuestionController.createInputForm() → inputForm.html -->
     <a th:href="@{/question/create}" class="btn btn-primary">질문 등록</a>
 </div>
+
+<!-- ================= ④ 페이징 클릭 스크립트 ================= -->
+<!-- layout:fragment="script" : layouts/layout.html 맨 아래 script 자리(부트스트랩 JS 다음)에 들어감 -->
 <script layout:fragment="script" type='text/javascript'>
 
     const page_elements = document.getElementsByClassName("page-link"); // 문서에서 page-link 클래스를 가진 모든 요소를 선택
