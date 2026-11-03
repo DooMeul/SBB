@@ -1,48 +1,62 @@
+# ============================================================================
+# [파일 역할] application.yml = 스프링 부트 "환경설정" 파일 (포트, DB 접속 정보, JPA 설정 등)
+#  - 들여쓰기(스페이스 2칸)가 곧 계층 구조! 탭(Tab) 쓰면 에러남. 들여쓰기 틀리면 설정이 무시됨
+#  - 시험 환경에서 DB 이름/비밀번호가 다르면 "MySQL 설정" 부분만 바꾸면 됨
+# ============================================================================
+
 ####################################
 # Port & Project Name
 ####################################
 server:
-  port: 8080                    # 포트 번호
+  port: 8080                    # 포트 번호  → http://localhost:8080 으로 접속
 
 spring:
   application:
-    name: SBB
+    name: SBB                   # 애플리케이션 이름
 
+  # ---------- devtools : 코드/화면 수정 시 서버 자동 재시작 & 브라우저 자동 새로고침 ----------
   devtools:
     restart:
-      enabled: true
+      enabled: true             # 자바 코드 수정하면 서버 자동 재시작
 
     livereload:
-      enabled: true
-      port: 35729
+      enabled: true             # html/css 수정하면 브라우저 자동 새로고침
+      port: 35729               # layouts/layout.html 의 livereload.js 스크립트 주소 포트와 같아야 함
 
+    # (참고) 원래 thymeleaf 캐시 설정은 spring.thymeleaf.cache 위치(devtools 와 같은 들여쓰기)가 맞음.
+    #        지금은 devtools 아래에 있어서 실제로는 적용 안 되지만, devtools 가 개발 중엔 캐시를 자동으로 꺼 줘서 문제는 없음
     thymeleaf:
-      cache: false 
+      cache: false              # 템플릿 캐시 끄기 (html 수정 즉시 반영)
 
   ####################################
-  # MySQL 설정
+  # MySQL 설정  ★ DB 연결 정보
   ####################################
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver   # MySQL 드라이버 (build.gradle 의 mysql-connector-j)
+    # jdbc:mysql://주소:포트/DB이름?옵션  → DB 이름은 sbb_a  (MySQL 에서 미리 CREATE DATABASE sbb_a; 해 둬야 함)
     url: jdbc:mysql://localhost:3306/sbb_a?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: '0000'
+    username: root              # MySQL 아이디
+    password: '0000'            # MySQL 비밀번호 (숫자로만 된 값은 따옴표로 감싸야 문자열로 인식)
 
   ####################################
   # JPA 설정
   ####################################
   jpa:
     open-in-view: true      # JPA 영속성 컨텍스트를 뷰까지 유지할지 여부
+                            #  → true 라서 html 화면에서 question.answerList (LAZY 로딩)를 꺼내 써도 에러가 안 남
     hibernate:
       ddl-auto: update     # create, update, ...
+                           #  update : 엔티티 클래스를 보고 테이블이 없으면 만들고, 바뀐 컬럼은 추가 (데이터 유지)
+                           #  create : 실행할 때마다 테이블을 지우고 새로 만듦 (데이터 날아감)
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy # 카멜케이스를 언더스코어로 변환
-    show-sql: true          # SQL 출력 여부
+                                                                                                # 예) answerList → answer_list, createDate → create_date
+    show-sql: true          # SQL 출력 여부 (콘솔에 실행된 SQL 이 보임)
     properties:
       hibernate:
-        format_sql: true    # SQL 포맷팅 여부
-        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true    # SQL 포맷팅 여부 (줄바꿈해서 보기 좋게)
+        dialect: org.hibernate.dialect.MySQLDialect   # MySQL 문법에 맞게 SQL 생성
 
   servlet:
     encoding:
-      charset: UTF-8        # 인코딩 설정
+      charset: UTF-8        # 인코딩 설정 (한글 깨짐 방지)

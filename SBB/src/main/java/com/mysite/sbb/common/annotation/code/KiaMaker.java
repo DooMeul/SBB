@@ -1,8 +1,13 @@
+// ============================================================================
+// [DI 연습 3단계(annotation)] KiaMaker
+//  - @Component("Kia") : 스프링이 자동으로 Bean 생성, 이름 "Kia"
+//  - OrderManager 의 @Qualifier("Kia") / @Named("Kia") 가 이 Bean 을 가리킴
+// ============================================================================
 package com.mysite.sbb.common.annotation.code;
 
 import org.springframework.stereotype.Component;
 
-@Component("Kia")
+@Component("Kia")       // Bean 이름 = "Kia"
 public class KiaMaker implements CarMaker {
 
     @Override

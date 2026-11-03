@@ -1,11 +1,21 @@
 <!DOCTYPE html>
+<!-- ==========================================================================
+     [파일 역할] fragments/header.html = 모든 페이지 상단에 나오는 "네비게이션 바(메뉴)"
+      - layouts/layout.html 에서 th:replace="~{fragments/header::header}" 로 불러감
+      - 아래 th:fragment="header" 가 붙은 div 부분만 잘려서 사용됨
+      - 부트스트랩 Navbar 예제를 가져와 수정한 것 (navbar, nav-item, dropdown 등은 부트스트랩 클래스)
+      ※ 메뉴를 추가하려면 <li class="nav-item"> ... </li> 한 덩어리를 복사해서 href 와 글자만 바꾸면 됨
+     ========================================================================== -->
 <html xmlns:th="http://www.thymeleaf.org">
 
-<div th:fragment="header">
+<div th:fragment="header">  <!-- 이 이름("header")으로 다른 파일에서 불러감 -->
+    <!-- navbar-expand-lg : 큰 화면에서는 메뉴 펼침, 작은 화면에서는 햄버거 버튼으로 접힘 / bg-dark : 검은 배경 -->
     <nav class="navbar navbar-expand-lg bg-dark">
         <div class="container-fluid">
+            <!-- 왼쪽 로고(사이트 이름). 클릭하면 "/" → IndexController.index2() → index.html -->
             <a class="navbar-brand text-white" href="/">병희의 SBB</a>
 
+            <!-- [모바일용 햄버거 버튼] 화면이 좁을 때만 보임. 누르면 아래 id="navbarSupportedContent" 메뉴를 펼치고 접음 -->
             <button class="navbar-toggler" type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent"
@@ -15,19 +25,24 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+            <!-- [메뉴 목록 영역] 위 햄버거 버튼의 data-bs-target 과 id 가 같아야 연결됨 -->
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- me-auto : 메뉴들을 왼쪽에 붙이고, 남는 공간을 오른쪽(검색창)으로 밀어냄 -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
+                    <!-- 메뉴1 : Home → "/" (메인 페이지) -->
                     <li class="nav-item">
                         <a class="nav-link active text-white" aria-current="page" href="/">
                             Home
                         </a>
                     </li>
 
+                    <!-- 메뉴2 : 질문목록 → "/question/list" → QuestionController.list() → question/list.html -->
                     <li class="nav-item">
                         <a class="nav-link text-white" href="/question/list">질문목록</a>
                     </li>
 
+                    <!-- 메뉴3 : 드롭다운 메뉴 (부트스트랩 예제 그대로, 링크는 아직 # = 아무 데도 안 감) -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white"
                            href="#"
@@ -37,14 +52,16 @@
                             Dropdown
                         </a>
 
+                        <!-- 드롭다운 펼쳤을 때 나오는 하위 메뉴들 -->
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="#">Action</a></li>
                             <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li><hr class="dropdown-divider"></li>   <!-- 구분선 -->
                             <li><a class="dropdown-item" href="#">Something else here</a></li>
                         </ul>
                     </li>
 
+                    <!-- 메뉴4 : 비활성화(클릭 불가) 메뉴 예제 -->
                     <li class="nav-item">
                         <a class="nav-link disabled text-white-50" aria-disabled="true">
                             Disabled
@@ -53,6 +70,7 @@
 
                 </ul>
 
+                <!-- [오른쪽 검색창] 모양만 있음. action 이 없어서 현재 페이지로 다시 요청됨 (검색 기능은 아직 미구현) -->
                 <form class="d-flex" role="search">
                     <input class="form-control me-2 bg-dark text-white border-secondary"
                            type="search"
